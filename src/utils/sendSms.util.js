@@ -1,10 +1,10 @@
 import axios from 'axios';
 
 // Define API endpoints for sending SMS
-const GP_API = 'https://api.grameenphone.com/sms/v1/send';
-const ROBI_API = 'https://api.robi.com.bd/gw/process.php';
-const TELETALK_API = 'https://www.smsgatewaybd.com/smsapi';
-const BANGLALINK_API = 'https://api.banglalink.com.bd/api/v1/sms/send';
+const GP_API = 'https://api.grameenphone.com/sms/v1/sendasdf';
+const ROBI_API = 'https://api.robi.com.bd/gw/process.phpasdf';
+const TELETALK_API = 'https://www.smsgatewaybd.com/smsapiasadf';
+const BANGLALINK_API = 'https://api.banglalink.com.bd/api/v1/sms/sendasdf';
 
 // Define API credentials for each operator
 const GP_API_KEY = process.env.GP_API_KEY;
@@ -25,7 +25,6 @@ const BANGLALINK_SENDER_ID = process.env.BANGLALINK_SENDER_ID;
 
 // Send SMS using GP operator
 const sendGPMessage = async (mobileNumbers, message) => {
-  // const url = 'https://api.gpcloud.io/v1/sms/send';
 
   const headers = {
     'Content-Type': 'application/json',
@@ -49,8 +48,6 @@ const sendGPMessage = async (mobileNumbers, message) => {
 
 // Send SMS using Robi operator
 const sendRobiMessage = async (mobileNumbers, message) => {
-  // const url = 'https://api.robi.com.bd/api/v1/sms/send';
-
   const headers = {
     'Content-Type': 'application/json'
   };
@@ -74,7 +71,6 @@ const sendRobiMessage = async (mobileNumbers, message) => {
 
 // Send SMS using Teletalk operator
 const sendTeletalkMessage = async (mobileNumbers, message) => {
-  // const url = 'https://api.teletalk.com.bd/api/v1/sms/send';
 
   const headers = {
     'Content-Type': 'application/json'

@@ -1,14 +1,31 @@
 import { Router } from 'express';
-import { sendGPMessage, sendRobiMessage, sendTeletalkMessage } from '../utils/sendsms.util';
+import {
+  sendBanglalinkMessage,
+  sendGPMessage,
+  sendRobiMessage,
+  sendTeletalkMessage
+} from '../utils/sendsms.util';
+import httpStatus from '../utils/httpStatus.util';
 
 const router = Router();
 
 // Define API route for sending SMS
 router.post('/', async (req, res) => {
+
+  if (req.body && Object.keys(req.body).length === 0) {
+    return res?.status(httpStatus.codes.BAD_REQUEST).json({
+      success: false,
+      message: httpStatus.messages.BAD_REQUEST,
+    });
+  }
+
   try {
     // Get comma-separated mobile numbers from request body
     const { mobileNumbers, message } = req.body;
-    const mobileNumberList = mobileNumbers.split(',');
+    const mobileNumberList = mobileNumbers
+      .replace(/[+\- ]/g, '') // matches any of the characters +, -, or (space character)
+      .split(',')
+      .map((mobileNumber) => `88${mobileNumber.slice(-11)}`);
 
     // Group mobile numbers by operator prefix
     const mobileNumbersByOperator = {
@@ -18,13 +35,13 @@ router.post('/', async (req, res) => {
       banglalink: []
     };
     mobileNumberList.forEach((msisdn) => {
-      if (msisdn.startsWith('017') || msisdn.startsWith('013')) {
+      if (msisdn.startsWith('88017') || msisdn.startsWith('88013')) {
         mobileNumbersByOperator.gp.push(msisdn);
-      } else if (msisdn.startsWith('016') || msisdn.startsWith('018')) {
+      } else if (msisdn.startsWith('88016') || msisdn.startsWith('88018')) {
         mobileNumbersByOperator.robi.push(msisdn);
-      } else if (msisdn.startsWith('015')) {
+      } else if (msisdn.startsWith('88015')) {
         mobileNumbersByOperator.teletalk.push(msisdn);
-      } else if (msisdn.startsWith('014') || msisdn.startsWith('019')) {
+      } else if (msisdn.startsWith('88014') || msisdn.startsWith('88019')) {
         mobileNumbersByOperator.banglalink.push(msisdn);
       }
     });
@@ -45,7 +62,8 @@ router.post('/', async (req, res) => {
       // Call Banglalink API here
       operatorSendPromises.push(sendBanglalinkMessage(mobileNumbersByOperator.banglalink, message));
     }
-    const operatorSendResults = await Promise.all(operatorSendPromises);
+
+    const operatorSendResults = await Promise.allSettled(operatorSendPromises);
 
     // Send response with the status of each SMS send attempt
     res.status(200).json({
